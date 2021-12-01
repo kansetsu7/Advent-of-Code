@@ -5,17 +5,17 @@
 
 (defn puzzle-input
   []
-  (->> (-> (slurp (io/resource "day1.txt"))
-          (cs/split #"\n"))
-       (map #(Integer/parseInt %))))
+  (as-> (slurp (io/resource "day1.txt")) $
+        (cs/split $ #"\n")
+        (map #(Integer/parseInt %) $)))
 
-(defn greater?
-  [x y]
-  (> x y))
+(defn incerase?
+  [previous curent]
+  (> previous curent))
 
 (defn get-increase
   [coll]
-  (->> (map greater?
+  (->> (map incerase?
             (rest coll)
             (pop (vec coll)))
        (filter #(true? %))
