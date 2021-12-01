@@ -9,17 +9,16 @@
         (cs/split $ #"\n")
         (map #(Integer/parseInt %) $)))
 
-(defn incerase?
-  [previous curent]
-  (> previous curent))
+(defn increase?
+  [[previous curent]]
+  (< previous curent))
 
 (defn get-increase
   [coll]
-  (->> (map incerase?
-            (rest coll)
-            (pop (vec coll)))
-       (filter #(true? %))
-       count))
+  (->> coll
+      (partition 2 1)
+      (filter increase?)
+      count))
 
 (comment
   ;; part1: 1692
