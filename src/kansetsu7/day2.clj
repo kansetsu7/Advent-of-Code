@@ -19,7 +19,23 @@
   (->> (map (fn [[dir amt]] (case dir "up" (* -1 amt) "down" amt 0)) coll)
        (apply +)))
 
+(defn get-destination
+  [[hr depth aim] [dir X]]
+  (case dir
+    "up"      [hr depth (- aim X)]
+    "down"    [hr depth (+ aim X)]
+    "forward" [(+ hr X) (+ depth (* aim X)) aim]))
+
+(defn multiply-hr-depth
+  [[hr depth _aim]]
+  (* hr depth))
+
 (comment
-  ;; part1: 1250395
+  ;; part1: 1692
   (let [input (puzzle-input)]
-    (* (sum-x input) (sum-y input))))
+    (* (sum-x input) (sum-y input)))
+
+  ;; part2: 1451210346
+  (->> (puzzle-input)
+       (reduce get-destination [0 0 0])
+       multiply-hr-depth))
