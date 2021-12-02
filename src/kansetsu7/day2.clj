@@ -7,16 +7,18 @@
   []
   (->> (cs/split (slurp (io/resource "day2.txt")) #"\n")
        (map #(cs/split % #" "))
-       (map (fn [[direction amt]] (vector direction (Integer/parseInt amt))))))
+       (map (fn [[dir X]] (vector dir (Integer/parseInt X))))))
 
-(defn sum-x
-  [coll]
-  (->> (map (fn [[dir amt]] (if (= "forward" dir) amt 0)) coll)
+(defn sum-hr
+  [course]
+  (->> course
+       (map (fn [[dir X]] (if (= "forward" dir) X 0)))
        (apply +)))
 
-(defn sum-y
-  [coll]
-  (->> (map (fn [[dir amt]] (case dir "up" (* -1 amt) "down" amt 0)) coll)
+(defn sum-depth
+  [course]
+  (->> course
+       (map (fn [[dir X]] (case dir "up" (* -1 X) "down" X 0)))
        (apply +)))
 
 (defn get-destination
@@ -31,9 +33,9 @@
   (* hr depth))
 
 (comment
-  ;; part1: 1692
+  ;; part1: 1250395
   (let [input (puzzle-input)]
-    (* (sum-x input) (sum-y input)))
+    (* (sum-hr input) (sum-depth input)))
 
   ;; part2: 1451210346
   (->> (puzzle-input)
