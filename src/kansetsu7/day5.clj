@@ -79,11 +79,24 @@
         end   (inc (max y1 y2))]
     (map #(vector x %) (range start end))))
 
+(defn expand-diagonal-points
+  [[[x1 y1] [x2 y2]]]
+  (let [start-x (min x1 x2)
+        end-x   (inc (max x1 x2))
+        start-y (min y1 y2)
+        end-y   (inc (max y1 y2))
+        x-range (cond-> (range start-x end-x)
+                  (> x1 x2) reverse)
+        y-range (cond-> (range start-y end-y)
+                  (> y1 y2) reverse)]
+    (map #(vector %1 %2) x-range y-range)))
+
 (defn cover-points
   [line]
-  (if (horizontal? line)
-    (expand-h-points line)
-    (expand-v-points line)))
+  (cond
+    (horizontal? line) (expand-h-points line)
+    (vertical? line) (expand-v-points line)
+    :else (expand-diagonal-points line)))
 
 (defn add-point-to-heatmap
   [heatmap point]
@@ -101,10 +114,17 @@
 
 (comment
   ;; example
+  (expand-diagonal-points [[8 0] [0 8]])
   (let [vent-lines (puzzle-input example-data)
         ini-heatmap (-> vent-lines get-heatmap-size init-heatmap)]
 
-    (->> (filter hv-line? vent-lines)
+    ;; part1
+    (->> vent-lines
+         (filter hv-line?)
+         (mapcat cover-points)
+         (update-heatmap ini-heatmap))
+    ;; part2
+    (->> vent-lines
          (mapcat cover-points)
          (update-heatmap ini-heatmap)
          count-safe-points))
@@ -112,6 +132,14 @@
   (let [vent-lines (puzzle-input)
         ini-heatmap (-> vent-lines get-heatmap-size init-heatmap)]
     (->> (filter hv-line? vent-lines)
+         (mapcat cover-points)
+         (update-heatmap ini-heatmap)
+         count-safe-points))
+
+  ;; part2:
+  (let [vent-lines (puzzle-input)
+        ini-heatmap (-> vent-lines get-heatmap-size init-heatmap)]
+    (->> vent-lines
          (mapcat cover-points)
          (update-heatmap ini-heatmap)
          count-safe-points)))
