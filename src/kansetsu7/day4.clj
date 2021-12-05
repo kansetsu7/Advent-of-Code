@@ -1,8 +1,7 @@
-(ns kansetsu7.day3
+(ns kansetsu7.day4
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as cs]
-    [clojure.math.numeric-tower :as math]))
+    [clojure.string :as cs]))
 
 (def example-draw-list
   [7 4 9 5 11 17 23 2 0 14 21 24 10 16 13 6 15 25 12 22 18 20 8 19 3 26 1])
@@ -95,15 +94,18 @@
         :else (recur (inc nth-draw))))))
 
 (defn get-win-board
-  [boards draw-list]
-  (->> (map #(board-info % draw-list) boards)
-       (filter #(:win? %))
-       (sort-by :nth-draw)
-       first))
+  [winner boards draw-list]
+  (cond-> (->> (map #(board-info % draw-list) boards)
+               (filter #(:win? %))
+               (sort-by :nth-draw))
+    (= :human winner) first
+    (= :squid winner) last))
 
 (comment
   ;; example
   (let [boards (puzzle-input exaple-data)]
-    (:score (get-win-board boards example-draw-list)))
+    (:score (get-win-board :human boards example-draw-list)))
   ;; part1
-  (get-win-board (puzzle-input) draw-list))
+  (get-win-board :human (puzzle-input) draw-list)
+  ;; part2
+  (get-win-board :squid (puzzle-input) draw-list))
