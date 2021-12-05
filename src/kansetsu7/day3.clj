@@ -19,10 +19,8 @@
 
 (defn get-most-common
   [nums]
-  (let [grouped-num (group-by identity nums)
-        zero-count  (count (get grouped-num 0))
-        one-count   (count (get grouped-num 1))]
-    (if (>= one-count zero-count) 1 0)))
+  (let [feq (frequencies nums)]
+    (if (>= (get feq 1) (get feq 0)) 1 0)))
 
 (defn get-most-common-at
   [nums position]
