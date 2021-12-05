@@ -107,39 +107,27 @@
   (reduce #(add-point-to-heatmap %1 %2) heatmap points))
 
 (defn count-safe-points
-  [heatmap]
-  (->> (flatten heatmap)
-       (filter #(>= % 2))
-       count))
+  [vent-lines {:keys [exclude-diagonal]}]
+  (let [ini-heatmap (-> vent-lines get-heatmap-size init-heatmap)]
+    (->> vent-lines
+         (filter #(cond-> % exclude-diagonal hv-line?))
+         (mapcat cover-points)
+         (update-heatmap ini-heatmap)
+         flatten
+         (filter #(>= % 2))
+         count)))
 
 (comment
   ;; example
-  (expand-diagonal-points [[8 0] [0 8]])
-  (let [vent-lines (puzzle-input example-data)
-        ini-heatmap (-> vent-lines get-heatmap-size init-heatmap)]
-
+  (let [vent-lines (puzzle-input example-data)]
     ;; part1
-    (->> vent-lines
-         (filter hv-line?)
-         (mapcat cover-points)
-         (update-heatmap ini-heatmap))
+    (count-safe-points vent-lines {:exclude-diagonal true})
     ;; part2
-    (->> vent-lines
-         (mapcat cover-points)
-         (update-heatmap ini-heatmap)
-         count-safe-points))
-  ;; part1: 5124
-  (let [vent-lines (puzzle-input)
-        ini-heatmap (-> vent-lines get-heatmap-size init-heatmap)]
-    (->> (filter hv-line? vent-lines)
-         (mapcat cover-points)
-         (update-heatmap ini-heatmap)
-         count-safe-points))
+    (count-safe-points vent-lines {:exclude-diagonal false}))
 
-  ;; part2:
-  (let [vent-lines (puzzle-input)
-        ini-heatmap (-> vent-lines get-heatmap-size init-heatmap)]
-    (->> vent-lines
-         (mapcat cover-points)
-         (update-heatmap ini-heatmap)
-         count-safe-points)))
+  ;; part1: 5124
+  (let [vent-lines (puzzle-input)]
+    (count-safe-points vent-lines {:exclude-diagonal true}))
+  ;; part2: 19771
+  (let [vent-lines (puzzle-input)]
+    (count-safe-points vent-lines {:exclude-diagonal false})))
