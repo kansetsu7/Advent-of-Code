@@ -40,9 +40,6 @@
   [[p1 p2]]
   (max (last p1) (last p2)))
 
- ;; ((268 959) (896 331))
- ;; ((886 616) (841 616))
- ;; ((375 503) (375 387)))
 (defn get-heatmap-size
   [lines]
   [(apply max (map get-max-x lines))
