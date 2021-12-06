@@ -15,24 +15,36 @@
         (map #(Integer/parseInt %))
         vec)))
 
+(defn move->fuel-cost
+  [burn-rate move]
+  (if (= :constant burn-rate)
+    move
+    (cond->
+      (* (inc move) (int (/ move 2)))
+      (odd? move) (+ (/ (inc move) 2)))))
+
 (defn fuel-cost
-  [positions to]
+  [burn-rate positions to]
   (->> positions
        (map #(math/abs (- % to)))
+       (map #(move->fuel-cost burn-rate %))
        (apply +)))
 
 (defn least-fuel-option
-  [positions]
+  [burn-rate positions]
   (let [move-options (range (apply min positions) (inc (apply max positions)))]
     (->> move-options
-         (map #(hash-map :move-to % :cost (fuel-cost positions %)))
+         (map #(hash-map :move-to % :cost (fuel-cost burn-rate positions %)))
          (apply min-key :cost))))
 
 (comment
   ;; example
   (let [positions (puzzle-input example-data)]
-    (:cost (least-fuel-option positions)))
+    (:cost (least-fuel-option :constant positions)))
 
-  ;; part1
+  ;; part1: 359648
   (let [positions (puzzle-input)]
-    (:cost (least-fuel-option positions))))
+    (:cost (least-fuel-option :constant positions)))
+  ;; part2: 100727924
+  (let [positions (puzzle-input)]
+    (:cost (least-fuel-option :linear positions))))
