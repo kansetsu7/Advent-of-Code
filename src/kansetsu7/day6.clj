@@ -18,41 +18,40 @@
   [timer]
   (if (zero? timer) 6 (dec timer)))
 
-(defn new-fish-counts
-  [timers]
-  (-> (frequencies timers)
-      (get 0)))
-
-(defn create-new-fishes
-  [timers]
-  (if-let [cnt (new-fish-counts timers)]
-    (repeat cnt 8)
-    []))
-
+(defn update-timer-map-keys
+  [m]
+  (->> m
+      (map (fn [[k v]] (hash-map (update-timer k) v)))
+      (apply merge-with +)))
 
 (defn next-day
-  [timers]
-  (->> (map update-timer timers)
-       (apply conj (create-new-fishes timers))))
+  [timer-map]
+  (let [new-fishes (or (get timer-map 0) 0)]
+    (cond-> (update-timer-map-keys timer-map)
+      (> new-fishes 0) (update 8 #(+ (or % 0) new-fishes)))))
 
 (defn days-pass
   [timers days]
-  (loop [timers timers
+  (loop [timer-map   (frequencies timers)
          passed-days 0]
     (if (>= passed-days days)
-      timers
-      (recur (next-day timers)
+      (apply + (vals timer-map))
+      (recur (next-day timer-map)
              (inc passed-days)))))
+
+(defn part1
+  []
+  (days-pass (puzzle-input) 80)) ;; 350605
+
+(defn part2
+  []
+  (days-pass (puzzle-input) 256)) ;; 1592778185024
 
 (comment
   ;; example
   (let [ini-fishes (puzzle-input example-data)]
-    ;; part1
-    (count (days-pass ini-fishes 18))
-    (count (days-pass ini-fishes 80)))
-  ;; part1
-  (let [ini-fishes (puzzle-input)]
-    ;; part1
-    (count (days-pass ini-fishes 80))))
+    (days-pass ini-fishes 18)
+    (days-pass ini-fishes 80))
 
-
+  (part1)
+  (part2))
