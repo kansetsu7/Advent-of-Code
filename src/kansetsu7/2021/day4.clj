@@ -1,15 +1,15 @@
 (ns kansetsu7.day4
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as cs]))
+    [clojure.string :as cs]
+    [kansetsu7.util :as util]))
 
 (def example-draw-list
   [7 4 9 5 11 17 23 2 0 14 21 24 10 16 13 6 15 25 12 22 18 20 8 19 3 26 1])
 
 (def draw-list
   (let [str-list "42,44,71,26,70,92,77,45,6,18,79,54,31,34,64,32,16,55,81,11,90,10,21,87,0,84,8,23,1,12,60,20,57,68,61,82,49,59,22,2,63,33,50,39,28,30,88,41,69,72,98,73,7,65,53,35,96,67,36,4,51,75,24,86,97,85,66,29,74,40,93,58,9,62,95,91,80,99,14,19,43,37,27,56,94,25,83,48,17,38,78,15,52,76,5,13,46,89,47,3"]
-      (->> (cs/split str-list #",")
-           (map #(Integer/parseInt %)))))
+    (util/find-ints str-list)))
 
 (def exaple-data
   "22 13 17 11  0
@@ -56,13 +56,9 @@
   [board drawn-nums]
   (filter #(bingo? % drawn-nums) board))
 
-(defn transpose
-  [board]
-  (apply mapv vector board))
-
 (defn bingo-col
   [board drawn-nums]
-  (filter #(bingo? % drawn-nums) (transpose board)))
+  (filter #(bingo? % drawn-nums) (util/transpose board)))
 
 (defn bingo-nums
   [board drawn-nums]
@@ -105,7 +101,7 @@
   ;; example
   (let [boards (puzzle-input exaple-data)]
     (:score (get-win-board :human boards example-draw-list)))
-  ;; part1
+  ;; part1: 16674
   (get-win-board :human (puzzle-input) draw-list)
-  ;; part2
+  ;; part2: 7075
   (get-win-board :squid (puzzle-input) draw-list))

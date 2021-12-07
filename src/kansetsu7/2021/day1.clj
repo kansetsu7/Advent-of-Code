@@ -1,13 +1,12 @@
 (ns kansetsu7.day1
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as cs]))
+    [kansetsu7.util :as util]))
 
 (defn puzzle-input
   []
-  (as-> (slurp (io/resource "day1.txt")) $
-        (cs/split $ #"\n")
-        (map #(Integer/parseInt %) $)))
+  (-> (slurp (io/resource "day1.txt"))
+      util/find-ints))
 
 (defn increase?
   [[previous curent]]
@@ -29,4 +28,3 @@
   (->> (partition 3 1 (puzzle-input))
        (map #(apply + %))
        get-increase))
-

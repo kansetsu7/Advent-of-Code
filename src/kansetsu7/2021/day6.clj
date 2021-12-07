@@ -1,7 +1,7 @@
 (ns kansetsu7.day6
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as cs]))
+    [kansetsu7.util :as util]))
 
 (def example-data
   "3,4,3,1,2")
@@ -9,10 +9,7 @@
 (defn puzzle-input
   ([] (puzzle-input (slurp (io/resource "day6.txt"))))
   ([string-data]
-   (->> (cs/split string-data #",")
-        (map cs/trim)
-        (map #(Integer/parseInt %))
-        vec)))
+   (vec (util/find-ints string-data))))
 
 (defn update-timer
   [timer]

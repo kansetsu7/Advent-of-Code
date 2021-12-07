@@ -2,16 +2,13 @@
   (:require
     [clojure.java.io :as io]
     [clojure.string :as cs]
+    [kansetsu7.util :as util]
     [clojure.math.numeric-tower :as math]))
-
-(defn chars->int
-  [char-coll]
-  (map #(-> % str Integer/parseInt) char-coll))
 
 (defn puzzle-input
   []
   (->> (cs/split (slurp (io/resource "day3.txt")) #"\n")
-       (map #(-> % seq chars->int))))
+       (map #(-> % seq util/chars->int))))
 
 (defn map-nth
   [coll position]
@@ -80,4 +77,3 @@
   ;;   [input]
   ;;   (->> (cs/split input #"\n")
   ;;        (map #(-> % seq chars->int)))))
-

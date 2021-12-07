@@ -1,7 +1,7 @@
 (ns kansetsu7.day7
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as cs]
+    [kansetsu7.util :as util]
     [clojure.math.numeric-tower :as math]))
 
 (def example-data
@@ -10,10 +10,7 @@
 (defn puzzle-input
   ([] (puzzle-input (slurp (io/resource "day7.txt"))))
   ([string-data]
-   (->> (cs/split string-data #",")
-        (map cs/trim)
-        (map #(Integer/parseInt %))
-        vec)))
+   (vec (util/find-ints string-data))))
 
 (defn move->fuel-cost
   [burn-rate move]

@@ -1,7 +1,8 @@
 (ns kansetsu7.day5
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as cs]))
+    [clojure.string :as cs]
+    [kansetsu7.util :as util]))
 
 (def example-data
   "0,9 -> 5,9
@@ -15,22 +16,12 @@
    0,0 -> 8,8
    5,5 -> 8,2")
 
-(defn coor-str->coor-int
-  [coor-str]
-  (map #(Integer/parseInt %) coor-str))
-
-(defn line-str->line-coor
-  [line-str]
-  (->> (cs/split line-str #" -> ")
-       (map #(cs/split % #","))
-       (map coor-str->coor-int)))
-
 (defn puzzle-input
   ([] (puzzle-input (slurp (io/resource "day5.txt"))))
   ([string-data]
-   (->> (cs/split string-data #"\n")
-        (map cs/trim)
-        (map line-str->line-coor))))
+   (->> (util/find-ints string-data)
+        (partition 2)
+        (partition 2))))
 
 (defn get-max-x
   [[p1 p2]]

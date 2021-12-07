@@ -1,13 +1,11 @@
 (ns kansetsu7.day2
   (:require
     [clojure.java.io :as io]
-    [clojure.string :as cs]))
+    [kansetsu7.util :as util]))
 
 (defn puzzle-input
   []
-  (->> (cs/split (slurp (io/resource "day2.txt")) #"\n")
-       (map #(cs/split % #" "))
-       (map (fn [[dir X]] (vector dir (Integer/parseInt X))))))
+  (util/->str-int-pairs (slurp (io/resource "day2.txt"))))
 
 (defn sum-hr
   [course]
