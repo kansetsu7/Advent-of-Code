@@ -1,6 +1,9 @@
 (ns kansetsu7.day8
   (:require
-    [clojure.java.io :as io]))
+    [clojure.java.io :as io]
+    [clojure.string :as cs]
+    [kansetsu7.util :as util]
+    [clojure.math.numeric-tower :as math]))
 
 (def example-data
   "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
@@ -43,11 +46,45 @@
        (filter #(uniq-num-segs->num %))
        count))
 
+(defn ->segments
+  [string]
+  (set (re-seq #"\w" string)))
+
+(def seg-num-map
+  (->> ["cagedb"
+        "ab"
+        "gcdfa"
+        "fbcad"
+        "eafb"
+        "cdfbe"
+        "cdfgeb"
+        "dab"
+        "acedgfb"
+        "cefabd"]
+       (map #(-> % ->segments))
+       (map-indexed #(vector %2 %1))
+       (into {})))
+         ;; {(->segments "cdfeb") 5
+         ;;  (->segments "fcadb") 3
+         ;;  (->segments "cdbaf") 3}))
+
+(defn segment->num
+  [seg]
+  (or (seg-num-map seg)
+      (-> seg count uniq-num-segs->num)))
+
 (comment
   ;; example
   (let [input (puzzle-input example-data)]
-    (count-uniq-output input))
+    (count-uniq-output input)
+    (->> (extract-output input)
+         (map ->segments)
+         (map #(vector % (segment->num %)))))
 
   ;; part1: 369
   (let [input (puzzle-input)]
     (count-uniq-output input)))
+
+  ;; part2:
+  ;; (let [input (puzzle-input)
+  ;;       ]))

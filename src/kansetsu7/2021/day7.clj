@@ -16,9 +16,7 @@
   [burn-rate move]
   (if (= :constant burn-rate)
     move
-    (cond->
-      (* (inc move) (int (/ move 2)))
-      (odd? move) (+ (/ (inc move) 2)))))
+    (/ (* move (inc move)) 2)))
 
 (defn fuel-cost
   [burn-rate positions to]
