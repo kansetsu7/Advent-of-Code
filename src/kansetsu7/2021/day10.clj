@@ -47,7 +47,12 @@
   (->> (map remove-legal-chunk lines)
        (remove all-same-side?)))
 
-(defn get-first-illegal
+(defn keep-incomplete-lines
+  [lines]
+  (->> (map remove-legal-chunk lines)
+       (filter all-same-side?)))
+
+(defn first-illegal
   [line]
   (->> (seq line)
        (partition 2 1)
@@ -56,7 +61,7 @@
        first
        (re-find #".$")))
 
-(defn char->pt
+(defn illegal-char->pt
   [c]
   ({")" 3
     "]" 57
@@ -66,17 +71,50 @@
 (defn syntax-error-score
   [lines]
   (->> (keep-illegal-lines lines)
-       (map get-first-illegal)
-       (map char->pt)
+       (map first-illegal)
+       (map illegal-char->pt)
        (apply +)))
+
+(defn closing-char
+  [c]
+  ({"(" ")"
+    "[" "]"
+    "{" "}"
+    "<" ">"} c))
+
+(defn incomplete-char->pt
+  [c]
+  ({")" 1
+    "]" 2
+    "}" 3
+    ">" 4} c))
+
+(defn incomplete-line->pt
+  [line]
+  (->> (seq line)
+       reverse
+       (map str)
+       (map closing-char)
+       (map incomplete-char->pt)
+       (reduce (fn [ttl pt] (+ pt (* 5 ttl))) 0)))
+
+(defn find-mid-num
+  [coll]
+  (get (-> coll sort vec) (-> coll count (/ 2) int)))
+
+(defn incompletemiddle-score
+  [lines]
+  (->> (keep-incomplete-lines lines)
+       (map incomplete-line->pt)
+       find-mid-num))
 
 (comment
   ;; example
   (let [input (puzzle-input example-data)]
     (syntax-error-score input))
 
+  ;; part1: 370407
+  (syntax-error-score (puzzle-input))
 
-  ;; part1
-  (syntax-error-score (puzzle-input)))
-
-  ;; part2
+  ;; part2: 3249889609
+  (incompletemiddle-score (puzzle-input)))
