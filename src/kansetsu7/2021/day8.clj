@@ -27,16 +27,11 @@
   [coll]
   (map #(-> % seq count) coll))
 
-(def uniq-num-segs->num
+(def uniq-seg-cnt->num
   {2 1
    3 7
    4 4
    7 8})
-
-(defn extract-output
-  [input]
-  (->> (take-nth 2 (rest input))
-       flatten))
 
 (defn ->segments
   [string]
@@ -46,19 +41,13 @@
   [input]
   (->> (take-nth 2 (rest input))
        flatten
-       (filter #(-> % ->segments count uniq-num-segs->num))
+       (filter #(-> % ->segments count uniq-seg-cnt->num))
        count))
-
-(defn ->uniq-segment-map
-  [seg-num]
-  (->> (map ->segments seg-num)
-       (map #(hash-map :segment % :count (count %) :num (-> % count uniq-num-segs->num)))))
-
 
 (defn ->known-num-segs
   [seg-nums]
   (->> (map ->segments seg-nums)
-       (map #(vector % (-> % count uniq-num-segs->num)))
+       (map #(vector % (-> % count uniq-seg-cnt->num)))
        (filter last)
        (into {})))
 
