@@ -80,12 +80,11 @@
 
 (defn after-n-steps
   [n octopuses]
-  (reduce
-    (fn [{:keys [octopuses flashes]} _]
-      (let [oct' (add-step octopuses)]
-        {:octopuses oct' :flashes (+ flashes (flash-count oct'))}))
-    {:octopuses octopuses :flashes 0}
-    (range n)))
+  (-> (iterate (fn [{:keys [octopuses flashes]}]
+                 (let [oct' (add-step octopuses)]
+                   {:octopuses oct' :flashes (+ flashes (flash-count oct'))}))
+               {:octopuses octopuses :flashes 0})
+      (nth n)))
 
 (defn synchronized?
   [octopuses]
@@ -104,11 +103,12 @@
 
 (comment
   ;;part1
-  (:flashes (after-n-steps 100 (puzzle-input example-data-2)))
+  (:flashes (after-n-steps 10 (puzzle-input example-data-2)))  ;; 204
+  (:flashes (after-n-steps 100 (puzzle-input example-data-2))) ;; 1656
   ;; part2
-  (synchronized-step (puzzle-input example-data-2))
+  (synchronized-step (puzzle-input example-data-2)) ;; 195
 
-  ;;part1
+  ;; part1: 1739
   (:flashes (after-n-steps 100 (puzzle-input)))
-  ;; part2
+  ;; part2: 324
   (synchronized-step (puzzle-input)))
