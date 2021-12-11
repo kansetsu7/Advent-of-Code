@@ -51,6 +51,7 @@
         height (count octopuses)
         [x y] (util/idx->xy idx width)
         adjacents (util/find-adjacent-coordinates [x y] [width height])]
+    ;; (prn :xy-> [x y] :adj adjacents)
     (reduce #(util/update-matrix %1 %2 inc) octopuses adjacents)))
 
 (defn flash-off
@@ -83,8 +84,28 @@
     {:octopuses octopuses :flashes 0}
     (range n)))
 
+(defn synchronized?
+  [octopuses]
+  (->> (flatten octopuses)
+       (every? zero?)))
+
+(defn synchronized-step
+  [octopuses]
+  (loop [n 0
+         oct octopuses]
+    (if (synchronized? oct)
+      n
+      (recur (inc n)
+             (add-step oct)))))
+
+
 (comment
+  ;;part1
   (:flashes (after-n-steps 100 (puzzle-input example-data-2)))
+  ;; part2
+  (synchronized-step (puzzle-input example-data-2))
 
   ;;part1
-  (:flashes (after-n-steps 100 (puzzle-input))))
+  (:flashes (after-n-steps 100 (puzzle-input)))
+  ;; part2
+  (synchronized-step (puzzle-input)))
