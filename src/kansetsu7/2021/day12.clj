@@ -53,7 +53,7 @@
   [cave path _rule]
   (>= (get (small-cave-visit-frequency path) cave 0) 1))
 
-(defmethod invalid-small-cave? :once-small-cave-twice-others-once
+(defmethod invalid-small-cave? :one-small-cave-twice-others-once
   [cave path _rule]
   (let [visit-feq (small-cave-visit-frequency path)]
     (or (>= (get visit-feq cave 0) 2)
@@ -101,4 +101,4 @@
   ;; part1: 4775
   (time (count-all-possible-paths (possible-directions (puzzle-input)) :all-small-cave-once))
   ;; part2: 152480
-  (time (count-all-possible-paths (possible-directions (puzzle-input)) :once-small-cave-twice-others-once)))
+  (time (count-all-possible-paths (possible-directions (puzzle-input)) :one-small-cave-twice-others-once)))
