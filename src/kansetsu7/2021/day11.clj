@@ -51,7 +51,6 @@
         height (count octopuses)
         [x y] (util/idx->xy idx width)
         adjacents (util/find-adjacent-coordinates [x y] [width height])]
-    ;; (prn :xy-> [x y] :adj adjacents)
     (reduce #(util/update-matrix %1 %2 inc) octopuses adjacents)))
 
 (defn flash-off
@@ -72,8 +71,8 @@
       (let [flashes (flash-indexes oct)]
         (if (empty? flashes)
           (every-off->0 oct)
-          (recur (as-> (reduce #(inc-adjacents %1 %2) oct flashes) $
-                       (flash-off $ flashes))))))))
+          (recur (-> (reduce #(inc-adjacents %1 %2) oct flashes)
+                     (flash-off flashes))))))))
 
 (defn after-n-steps
   [n octopuses]
