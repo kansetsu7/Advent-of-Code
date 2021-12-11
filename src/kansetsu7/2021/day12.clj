@@ -19,7 +19,8 @@
        (map reverse)
        (into rough-map)
        (remove (fn [[start end]] (or (= "end" start) (= "start" end))))
-       (map vec)))
+       (map vec)
+       (group-by (fn [[start _]] start))))
 
 (defn reach-end?
   [path]
@@ -33,7 +34,7 @@
   [path possible-dirs]
   (if (reach-end? path)
     [path]
-    (->> (filter #(= (last path) (first %)) possible-dirs)
+    (->> (get possible-dirs (last path))
          (map #(conj path (last %))))))
 
 (defn small-cave-visit-frequency
@@ -72,7 +73,7 @@
 
 (defn count-all-possible-paths
   [possible-dirs small-cave-access-rule]
-  (let [ini-paths (filter (fn [[start _]] (= "start" start)) possible-dirs)]
+  (let [ini-paths (get possible-dirs "start")]
     (loop [exploring-paths ini-paths
            ended-paths (count-ended-paths exploring-paths)]
       (if (empty? exploring-paths)
