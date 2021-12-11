@@ -66,21 +66,28 @@
        (mapcat #(join-next-cave % possible-dirs))
        (remove #(invalid-access? % small-cave-access-rule))))
 
-(defn list-all-possible-paths
+(defn count-ended-paths
+  [paths]
+  (count (filter reach-end? paths)))
+
+(defn count-all-possible-paths
   [possible-dirs small-cave-access-rule]
   (let [ini-paths (filter (fn [[start _]] (= "start" start)) possible-dirs)]
-    (loop [exploring-paths ini-paths]
-      (if (every? reach-end? exploring-paths)
-        exploring-paths
-        (recur (join-next-possible-cave exploring-paths possible-dirs small-cave-access-rule))))))
+    (loop [exploring-paths ini-paths
+           ended-paths (count-ended-paths exploring-paths)]
+      (if (empty? exploring-paths)
+        ended-paths
+        (let [exploring-paths' (remove reach-end? exploring-paths)]
+          (recur (join-next-possible-cave exploring-paths' possible-dirs small-cave-access-rule)
+                 (+ ended-paths (count-ended-paths exploring-paths))))))))
 
 (comment
   ;;part1
   (let [possible-dirs (->> (puzzle-input (nth example-data 2))
-                          possible-directions)]
-    (count (list-all-possible-paths possible-dirs :all-small-cave-once)))
+                           possible-directions)]
+    (count-all-possible-paths possible-dirs :all-small-cave-once))
 
   ;; part1: 4775
-  (count (list-all-possible-paths (possible-directions (puzzle-input)) :all-small-cave-once))
+  (time (count-all-possible-paths (possible-directions (puzzle-input)) :all-small-cave-once))
   ;; part2: 152480
-  (time (count (list-all-possible-paths (possible-directions (puzzle-input)) :once-small-cave-twice-others-once))))
+  (time (count-all-possible-paths (possible-directions (puzzle-input)) :once-small-cave-twice-others-once)))
