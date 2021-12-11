@@ -74,12 +74,16 @@
           (recur (-> (reduce #(inc-adjacents %1 %2) oct flashes)
                      (flash-off flashes))))))))
 
+(defn flash-count
+  [octopuses]
+  (count (filter-lv zero? octopuses)))
+
 (defn after-n-steps
   [n octopuses]
   (reduce
     (fn [{:keys [octopuses flashes]} _]
       (let [oct' (add-step octopuses)]
-        {:octopuses oct' :flashes (+ flashes (count (filter-lv zero? oct')))}))
+        {:octopuses oct' :flashes (+ flashes (flash-count oct'))}))
     {:octopuses octopuses :flashes 0}
     (range n)))
 
