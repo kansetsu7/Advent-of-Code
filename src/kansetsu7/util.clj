@@ -51,5 +51,5 @@
 
 (defn idx->xy
   [idx width]
-  [(unchecked-remainder-int idx width)
+  [(mod idx width)
    (-> idx (/ width) int)])

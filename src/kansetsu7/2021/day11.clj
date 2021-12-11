@@ -101,7 +101,6 @@
       (recur (inc n)
              (add-step oct)))))
 
-
 (comment
   ;;part1
   (:flashes (after-n-steps 10 (puzzle-input example-data-2)))  ;; 204
