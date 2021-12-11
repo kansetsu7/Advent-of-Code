@@ -80,11 +80,12 @@
 
 (defn after-n-steps
   [n octopuses]
-  (-> (iterate (fn [{:keys [octopuses flashes]}]
-                 (let [oct' (add-step octopuses)]
-                   {:octopuses oct' :flashes (+ flashes (flash-count oct'))}))
-               {:octopuses octopuses :flashes 0})
-      (nth n)))
+  (->> {:octopuses octopuses :flashes 0}
+       (iterate (fn [{:keys [octopuses flashes]}]
+                  (let [oct' (add-step octopuses)]
+                    {:octopuses oct' :flashes (+ flashes (flash-count oct'))})))
+       (drop n)
+       first))
 
 (defn synchronized?
   [octopuses]
