@@ -31,42 +31,51 @@
   [cave]
   (re-find #"[a-z]" cave))
 
-(defn join-next-cave
-  [path possible-dirs]
-  (if (reach-end? path)
-    [path]
-    (->> (get possible-dirs (last path))
-         (map #(conj path %)))))
+(defn big-cave?
+  [cave]
+  (not (small-cave? cave)))
 
 (defn small-cave-visit-frequency
   [path]
   (->> (frequencies path)
-       (filter (fn [[cave _]] (small-cave? cave)))))
+       (filter (fn [[cave _]] (small-cave? cave)))
+       (into {})))
 
 (defn visit-more-than?
   [n visit-feq]
   (some (fn [[_ visits]] (> visits n)) visit-feq))
 
-(defmulti invalid-access?
-  (fn [_path small-cave-access-rule] small-cave-access-rule))
 
-(defmethod invalid-access? :all-small-cave-once
-  [path _rule]
-  (visit-more-than? 1 (small-cave-visit-frequency path)))
+(defmulti invalid-small-cave?
+  (fn [_cave _path access-rule] access-rule))
 
-(defmethod invalid-access? :once-small-cave-twice-others-once
-  [path _rule]
+(defmethod invalid-small-cave? :all-small-cave-once
+  [cave path _rule]
+  (>= (get (small-cave-visit-frequency path) cave 0) 1))
+
+(defmethod invalid-small-cave? :once-small-cave-twice-others-once
+  [cave path _rule]
   (let [visit-feq (small-cave-visit-frequency path)]
-    (or (visit-more-than? 2 visit-feq)
-        (-> (filter (fn [[_ visits]] (= visits 2)) visit-feq)
-            count
-            (> 1)))))
+    (or (>= (get visit-feq cave 0) 2)
+        (and (= 1 (get visit-feq cave 0))
+             (visit-more-than? 1 visit-feq)))))
+
+(defn next-valid-caves
+  [path possible-dirs small-cave-access-rule]
+  (->> (get possible-dirs (last path))
+       (filter #(or (big-cave? %) (not (invalid-small-cave? % path small-cave-access-rule))))))
+
+(defn right-join-next-valid-cave
+  [path possible-dirs small-cave-access-rule]
+  (let [next-caves (next-valid-caves path possible-dirs small-cave-access-rule)]
+    (if (empty? next-caves)
+      []
+      (map #(conj path %) next-caves))))
 
 (defn join-next-possible-cave
   [exploring-paths possible-dirs small-cave-access-rule]
   (->> exploring-paths
-       (mapcat #(join-next-cave % possible-dirs))
-       (remove #(invalid-access? % small-cave-access-rule))))
+       (mapcat #(right-join-next-valid-cave % possible-dirs small-cave-access-rule))))
 
 (defn count-ended-paths
   [paths]
@@ -74,7 +83,7 @@
 
 (defn count-all-possible-paths
   [possible-dirs small-cave-access-rule]
-  (let [ini-paths (join-next-cave ["start"] possible-dirs)]
+  (let [ini-paths (right-join-next-valid-cave ["start"] possible-dirs small-cave-access-rule)]
     (loop [exploring-paths ini-paths
            ended-paths (count-ended-paths exploring-paths)]
       (if (empty? exploring-paths)
