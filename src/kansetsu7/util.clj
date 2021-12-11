@@ -2,6 +2,13 @@
   (:require
     [clojure.string :as cs]))
 
+;; general
+(defn blank?
+  [v]
+  (if (seqable? v) (empty? v) (not v)))
+
+(def present?  (complement blank?))
+
 ;; strings
 (defn find-ints
   [str-lines]
