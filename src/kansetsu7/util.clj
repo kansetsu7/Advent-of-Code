@@ -35,6 +35,12 @@
   [board]
   (apply mapv vector board))
 
+;; grid
+(defn init-grid
+  ([w h] (init-grid w h nil))
+  ([w h ini-val]
+   (vec (repeat h (vec (repeat w ini-val))))))
+
 (defn update-in-grid
   "Update a vector of vector grid, index start from 0"
   [grid [x y] f]
