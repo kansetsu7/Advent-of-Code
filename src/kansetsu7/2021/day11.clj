@@ -51,13 +51,13 @@
         height (count octopuses)
         [x y] (util/idx->xy idx width)
         adjacents (util/find-adjacent-coordinates [x y] [width height])]
-    (reduce #(util/update-matrix %1 %2 inc) octopuses adjacents)))
+    (reduce #(util/update-in-grid %1 %2 inc) octopuses adjacents)))
 
 (defn flash-off
   [octopuses indexes]
   (let [width (-> octopuses first count)
         turn-off #(- % ##Inf)]
-    (reduce #(util/update-matrix %1 (util/idx->xy %2 width) turn-off) octopuses indexes)))
+    (reduce #(util/update-in-grid %1 (util/idx->xy %2 width) turn-off) octopuses indexes)))
 
 (defn every-off->0
   [octopuses]

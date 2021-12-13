@@ -35,10 +35,10 @@
   [board]
   (apply mapv vector board))
 
-(defn update-matrix
-  "Update a vector of vector matrix, index start from 0"
-  [m [x y] f]
-  (update-in m [y x] f))
+(defn update-in-grid
+  "Update a vector of vector grid, index start from 0"
+  [grid [x y] f]
+  (update-in grid [y x] f))
 
 (defn find-adjacent-coordinates
   ([[x y] [width height]] (find-adjacent-coordinates [x y] [width height] {:include-diagonally? true}))
